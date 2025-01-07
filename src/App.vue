@@ -19,6 +19,8 @@
       <el-button type="primary" @click="submit">Submit</el-button>
     </el-form-item>
   </el-form>
+
+  <button @click="downloadImage">download</button>
 </template>
 
 <script lang="ts" setup>
@@ -49,4 +51,21 @@ const submit = () =>{
     resetCodeClick()
   })
 }
+
+
+const useFeatch = async (urls:string) =>{
+ const res = await fetch(urls).then(res=>res.arrayBuffer()) 
+ const blod = new Blob([res])
+ const url = URL.createObjectURL(blod)
+ const a = document.createElement('a')
+ a.href = url
+ a.download = 'image.png'
+ a.click()
+ 
+ }
+const downloadImage = () =>{
+  // useFeatch('http://localhost:3000/upload/stream')
+  window.open('http://localhost:3000/upload/export')
+}
+
 </script>
