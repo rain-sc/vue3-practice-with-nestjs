@@ -1,47 +1,52 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <el-form
+    :label-position="labelPosition"
+    label-width="auto"
+    :model="formLabelAlign"
+    style="max-width: 600px"
+  >
+    <el-form-item label="Name" :label-position="itemLabelPosition">
+      <el-input v-model="formLabelAlign.name" />
+    </el-form-item>
+    <el-form-item label="Password" :label-position="itemLabelPosition">
+      <el-input v-model="formLabelAlign.password" type="password" />
+    </el-form-item>
+    <el-form-item label="Code" :label-position="itemLabelPosition">
+      <el-input v-model="formLabelAlign.code" />
+      <img :src="codeUrl" alt="" @click="resetCodeClick">
+    </el-form-item>
+    <el-form-item>
+      <el-button type="primary" @click="submit">Submit</el-button>
+    </el-form-item>
+  </el-form>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
+<script lang="ts" setup>
+import { reactive, ref } from 'vue'
+import type { FormItemProps, FormProps } from 'element-plus'
+
+const labelPosition = ref<FormProps['labelPosition']>('right')
+const itemLabelPosition = ref<FormItemProps['labelPosition']>('')
+
+const codeUrl = ref<string>('/api/user/code')
+const formLabelAlign = reactive({
+  name: '',
+  password: '',
+  code: '',
+})
+
+const resetCodeClick = () =>  codeUrl.value = codeUrl.value + '?' + Math.random()
+
+const submit = () =>{
+  fetch('/api/user/create',{
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(formLabelAlign)
+  }).then(res=>res.json()).then(res=>{
+    console.log('res',res);
+    resetCodeClick()
+  })
 }
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
+</script>
